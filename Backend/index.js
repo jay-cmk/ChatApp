@@ -21,35 +21,24 @@ const PORT = process.env.PORT || 3000;
 
 app.use('/api/user',userRout)
 app.use('/api/message',messageRoute)
-app.get("/",(req,res)=>{
-    res.send("helloo world")
-})
+// app.get("/",(req,res)=>{
+//     res.send("helloo world")
+// })
 
 // ............code for deploy..........
 if(process.env.NODE_ENV=== "production"){
-   const dirPath=path.resolve()
+    const dirPath=path.resolve()
+ 
+ app.use(express.static("./Frontend/dist"))
+ app.get("*",(req,res)=>{
+   res.sendFile(path.resolve(dirPath,"./Frontend/dist","index.html"))
+ })
+ }
 
-app.use(express.static("./Frontend/dist"))
-app.get("*",(req,res)=>{
-  res.sendFile(path.resolve(dirPath,"./Frontend/dist","index.html"))
-})
-}
-// get request from database
 
-import users from './Model/user.model.js'
-import { Server } from 'socket.io';
-
-app.get("/users", async (req, res) => {
-    try {
-        const data = await users.find();
-        res.render("/user", { data }); // Pass todos to EJS template
-    } catch (err) {
-        res.status(500).send("Error fetching todos");
-    }
-});
-
-server.listen(PORT,()=>{     
+server.listen(PORT,()=>{ 
+    connectDB();    
     console.log(`server start at ${PORT}`)
 
 })
-connectDB();
+
